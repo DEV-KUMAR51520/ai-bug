@@ -38,7 +38,7 @@ Suspicious Lines Identified (1-indexed): {buggy_line if buggy_line not in ("-1",
 Relevant Knowledge Base Documentation:
 {docs_text}
 
-Provide an extremely short, single-phrase explanation of the bug. Focus ONLY on exactly what changed or what is wrong (e.g. "RDI_begin() changed to RDI_END()"). Limit your response to 1 short sentence or phrase. Do NOT provide long explanations.
+Provide an extremely short, single-phrase explanation of  bug. Focus ONLY on exactly what changed or what is wrong (e.g. "RDI_begin() changed to RDI_END()"). Limit your response to 1 short sentence or phrase. Do NOT provide long explanations.
         """
 
         try:
