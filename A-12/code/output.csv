@@ -1,0 +1,21 @@
+ID,Bug Line,Explanation
+16,"5, 11",The `RDI_BEGIN()` block is closed before the `vecEditMode()` function is called.
+32,"2, 3",The `burst()` function is called twice on the same port without a valid burst label.
+25,"5, 7",The `write_data` array is defined with a size of 2; but it's being accessed with indices 0 and 1; which is correct; but the array is then passed to `rdi.protocol().write()` with a single data value of 0x4; which is not an array.
+10,"2, 4",The `readHumSensor()` function is used instead of `readHumanSeniority()` function.
+26,"5, 9",The `addWaveform` function is called with a non-integer argument.
+23,"4, 5, 9, 13, 17, 21",The `burstUpload().end()` call is missing a corresponding `burstUpload().begin()` call.
+4,"1, 3",The unit of measurement for voltage in the code is inconsistent.
+31,"2, 5, 7",The `burst()` method is called on `vec_port1` before `push_back()` and `push_forward()`; which is likely incorrect.
+17,"2, 5","The `getFFC()` function is called with a pin name (""pB"") that does not match the pin name specified in the `label()` function (""pA"")."
+27,"2, 5",The `imeasRange` function is used incorrectly without a corresponding `vForce` function call.
+24,3,The `interS` method is missing its closing parenthesis.
+14,"3, 7, 8","The `rdi.dc(""a"").pin(""dig"").iForce(0).vMeas().execute()` line is missing the `alarm()` method to trigger alarm checking."
+9,"1, 3",The `rdi.cogo().begin()` method is called twice.
+13,"3, 4, 5",Incorrect method calls with misspelled function names.
+22,"2, 5",The function `readTempSensor()` was replaced with `readTempThresh()`.
+29,"4, 6",The `RDI_BEGIN()` and `RDI_END()` blocks are mismatched.
+2,"1, 3",The bug is a missing closing parenthesis in the calculation of `tFall`.
+20,"1, 4",The `rdi.digCapBurstSiteUpload(false)` line is set to `true` instead of `false`.
+11,"2, 3",The bug is that the number of averaged samples is not specified.
+3,"1, 4","The missing semicolon at the end of the line ""tFall = (((tStp1[0]-t_Arm1)-(tStp2[0]-t_Arm2)) + ((tStp1[1]-t_Arm1)"" causes a syntax error."
