@@ -6,3 +6,8 @@ groq
 pandas
 httpx
 httpx-sse
+fastapi
+uvicorn
+pydantic
+python-multipart
+pypdf

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM BREACH: BUG DETECTOR</title>
+    <style>
+        :root {
+            --hacker-green: #0f0;
+            --hacker-dark: #051005;
+            --terminal-bg: rgba(0, 10, 0, 0.85);
+            --danger-red: #f00;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--hacker-dark);
+            color: var(--hacker-green);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        /* Matrix Rain Background Canvas */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px var(--hacker-green);
+            animation: glitch 1.5s infinite;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+        }
+
+        main {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            gap: 2rem;
+            z-index: 10;
+        }
+
+        .terminal-box {
+            background: var(--terminal-bg);
+            border: 1px solid var(--hacker-green);
+            padding: 2rem;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.2), 0 0 15px rgba(0, 255, 0, 0.2);
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: "ROOT@SYS:~#";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--hacker-dark);
+            padding: 0 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        input[type="file"], textarea, input[type="text"] {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--hacker-green);
+            color: var(--hacker-green);
+            padding: 1rem;
+            font-size: 1rem;
+            resize: vertical;
+            transition: box-shadow 0.2s;
+        }
+
+        input[type="file"] {
+            padding: 0.8rem;
+            cursor: pointer;
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            background: var(--hacker-green);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-right: 1rem;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            box-shadow: 0 0 10px var(--hacker-green);
+        }
+
+        button.hack-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #000;
+            color: var(--hacker-green);
+            border: 2px solid var(--hacker-green);
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button.hack-btn:hover {
+            background: var(--hacker-green);
+            color: #000;
+            box-shadow: 0 0 20px var(--hacker-green);
+        }
+
+        button.hack-btn:disabled {
+            border-color: #555;
+            color: #555;
+            cursor: not-allowed;
+            background: #000;
+            box-shadow: none;
+        }
+
+        .loader {
+            display: none;
+            font-weight: bold;
+            animation: blink 1s infinite alternate;
+        }
+
+        /* Results / Output */
+        #results-container {
+            display: none;
+        }
+
+        .output-line {
+            margin-top: 1rem;
+            border-left: 2px solid var(--hacker-green);
+            padding-left: 1rem;
+        }
+
+        .danger-text {
+            color: var(--danger-red);
+            text-shadow: 0 0 5px var(--danger-red);
+        }
+
+        .typing-effect {
+            border-right: 2px solid var(--hacker-green);
+            white-space: pre-wrap;
+            animation: cursorBlink 0.8s infinite;
+        }
+
+        .error-message {
+            color: var(--danger-red);
+            padding: 1rem;
+            border: 1px dashed var(--danger-red);
+            margin-top: 1rem;
+            display: none;
+            background: rgba(255,0,0,0.1);
+        }
+
+        /* Glitch Animation */
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { border-color: transparent }
+            50% { border-color: var(--hacker-green) }
+        }
+
+        @keyframes blink {
+            from { opacity: 1; }
+            to { opacity: 0.2; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-canvas"></canvas>
+
+    <header>
+        <h1>[ SYSTEM BREACH ]</h1>
+        <p>A.I. BUG ANALYSIS PROTOCOL INIT</p>
+    </header>
+
+    <main>
+        <div class="terminal-box">
+            <form id="hack-form">
+                <div class="form-group">
+                    <label>> UPLOAD_PDF_TARGET.pdf (Optional)</label>
+                    <input type="file" id="pdf-upload" accept="application/pdf">
+                </div>
+
+                <div style="text-align: center; margin: 10px 0;">-- OR --</div>
+
+                <div class="form-group">
+                    <label>> INJECT_CODE_RAW (Required if no PDF)</label>
+                    <textarea id="code-raw" rows="8" placeholder="// Paste vulnerable payload here..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>> EXECUTION_CONTEXT (Optional hints for AI)</label>
+                    <input type="text" id="context-raw" placeholder="e.g. Memory leak suspected in loop" autocomplete="off">
+                </div>
+
+                <button type="submit" class="hack-btn" id="submit-btn">
+                    <span id="btn-text">=> EXECUTE_EXPLOIT <=</span>
+                    <span class="loader" id="loader">[ DECRYPTING... ]</span>
+                </button>
+            </form>
+            <div id="error-msg" class="error-message"></div>
+        </div>
+
+        <div class="terminal-box" id="results-container">
+            <h3>[ OUTPUT_STREAM_CAPTURED ]</h3>
+            
+            <div class="output-line">
+                <label>> TRACE._BUGGY_LINE :</label>
+                <div id="bug-line" class="danger-text" style="padding: 10px; background: rgba(255,0,0,0.1); margin-top: 5px; font-weight: bold;"></div>
+            </div>
+
+            <div class="output-line">
+                <label>> AUTO_EXPLANATION._SYS :</label>
+                <div id="explanation" class="typing-effect" style="margin-top: 5px; line-height: 1.5;"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array.from({ length: columns }).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Typewriter Effect
+        async function typeWriterInfo(element, htmlContent, speed = 10) {
+            element.innerHTML = '';
+            // Since it might contain markdown/html, we can just insert it immediately 
+            // but reveal it character by character, or just do an opacity fade.
+            // For true hacker style, let's type out text Content.
+            
+            // To support basic HTML from the API (if markdown is parsed), this is tricky.
+            // Let's just insert the raw text fast.
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlContent;
+            let textOutput = tempDiv.textContent || tempDiv.innerText || "";
+            
+            element.textContent = '';
+            for(let i=0; i < textOutput.length; i++) {
+                element.textContent += textOutput.charAt(i);
+                if (i % 3 === 0) await new Promise(r => setTimeout(r, 1)); // Speed up
+            }
+        }
+
+        // Form Submission
+        document.getElementById('hack-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('pdf-upload').files[0];
+            const codeRaw = document.getElementById('code-raw').value;
+            const contextRaw = document.getElementById('context-raw').value;
+
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('loader');
+            const resultsContainer = document.getElementById('results-container');
+            const errorMsgEl = document.getElementById('error-msg');
+            
+            const bugLineEl = document.getElementById('bug-line');
+            const explanationEl = document.getElementById('explanation');
+
+            errorMsgEl.style.display = 'none';
+            resultsContainer.style.display = 'none';
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            loader.style.display = 'inline-block';
+            bugLineEl.textContent = '';
+            explanationEl.textContent = '';
+
+            try {
+                const formData = new FormData();
+                if (fileInput) formData.append('code_file', fileInput);
+                if (codeRaw) formData.append('code_text', codeRaw);
+                formData.append('context', contextRaw);
+
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+                if (data.error) throw new Error(data.error);
+
+                resultsContainer.style.display = 'block';
+                bugLineEl.textContent = data.bug_line || "NO_BUG_FOUND_IN_TARGET";
+                
+                await typeWriterInfo(explanationEl, data.explanation || "NULL_EXPLANATION");
+
+            } catch (error) {
+                console.error("BREACH_ERROR:", error);
+                errorMsgEl.textContent = `[!] FATAL_ERROR: ${error.message}`;
+                errorMsgEl.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                btnText.style.display = 'inline-block';
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

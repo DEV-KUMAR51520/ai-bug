@@ -57,3 +57,27 @@ class Orchestrator:
         out_df = pd.DataFrame(results)
         out_df.to_csv(output_csv, index=False)
         print("Done!")
+
+    def process_single(self, code: str, context: str) -> dict:
+        """
+        Processes a single snippet of code and context through the agents.
+        Returns a dictionary containing the bug line and explanation.
+        """
+        print("Processing single request...")
+
+        # 1. Parser Agent -> find buggy line
+        buggy_line = self.parser.find_buggy_line(code)
+        print(f"  [Parser] Found buggy line: {buggy_line}")
+
+        # 2. Validator Agent -> fetch relevant MCP docs based on Context
+        mcp_docs = self.validator.retrieve_context(context)
+        print(f"  [Validator] Retrieved {len(mcp_docs)} documents from knowledge base.")
+
+        # 3. Explainer Agent -> generate explanation using Code, Buggy Line, and MCP Docs
+        explanation = self.explainer.generate_explanation(code, buggy_line, mcp_docs)
+        print(f"  [Explainer] Explanation generated.")
+
+        return {
+            "bug_line": buggy_line,
+            "explanation": explanation
+        }
