@@ -44,7 +44,8 @@ retriever = VectorIndexRetriever(index=index, similarity_top_k=20)
 #     print(ele,"\n\n")
 
 
-mcp= FastMCP("ABH_Server",port=8003)
+port = int(os.environ.get("PORT", 8003))
+mcp = FastMCP("ABH_Server", host="0.0.0.0", port=port)
 
 @mcp.tool()
 def add(a: int, b: int) -> int:

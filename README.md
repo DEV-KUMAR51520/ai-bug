@@ -2,6 +2,8 @@
 
 > **An Agentic AI system that detects bugs in code using a multi-agent reasoning pipeline powered by Groq LLMs and vector-based knowledge retrieval.**
 
+
+
 ## 📌 Table of Contents
 
 - [Overview](#-overview)
@@ -356,6 +358,11 @@ ID,Bug Line,Explanation
 | 📐 Intelligent Static Analysis | Context-aware analysis beyond traditional linters |
 
 ---
+
+
+⚠⚠⚠ NOTE:
+THE MCP SERVER IS DEPLOYED ON RENDER ON A FREE VERSION AND WITH INACTIVITY THE FREE INSTANCE WILL SPIN DOWN, AND IT CAN DELAY THE REQUESTS BY 50s OR MORE.
+
 
 ## 👤 Author
 
